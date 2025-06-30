@@ -1,14 +1,18 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/env";
 
+// Interface for token payload
+interface TokenPayload {
+  id: string;
+  role: "customer" | "seller" | "admin";
+}
+
 // Generate a JWT token
-export const generateToken = (userId: string, role: string): string => {
-  return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: "1h" });
+export const generateToken = (payload: TokenPayload): string => {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 };
 
 // Verify a JWT token
-export const verifyToken = (
-  token: string
-): { userId: string; role: string } => {
-  return jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+export const verifyToken = (token: string): TokenPayload => {
+  return jwt.verify(token, JWT_SECRET) as TokenPayload;
 };

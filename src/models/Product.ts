@@ -4,8 +4,9 @@ import { IProduct } from "../interfaces/Product";
 const productSchema: Schema<IProduct> = new mongoose.Schema(
   {
     title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true }, // SEO-friendly URL slug
     price: { type: Number, required: true },
-    category: { type: String },
+    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     salePrice: { type: Number },
     stock: [String],
     features: [String],
@@ -15,4 +16,4 @@ const productSchema: Schema<IProduct> = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Product = mongoose.model("Product", productSchema);
+export const Product = mongoose.model<IProduct>("Product", productSchema);
