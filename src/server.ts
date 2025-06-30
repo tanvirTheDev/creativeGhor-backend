@@ -9,7 +9,7 @@ const app = express();
 
 // Middleware
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://creativeghor.onrender.com"], // Replace with your frontend URL
+  origin: ["http://localhost:3000", "https://qmmerce.vercel.app"], // Replace with your frontend URL
   credentials: true, // Allow credentials (cookies, headers, etc.)
 };
 
