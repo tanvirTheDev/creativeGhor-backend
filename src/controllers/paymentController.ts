@@ -1,50 +1,43 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
-import { Payment } from "../models/Payment";
-import { initiateSslPayment } from "../services/paymentServices";
+import SSLCommerzPayment from "sslcommerz-lts";
+const store_id = "testbox";
+const store_passwd = "qwerty";
+const is_live = false;
 
 export const initiatePayment = async (req: Request, res: Response) => {
-  try {
-    const { amount, user_email } = req.body;
-    const paymentUrl = await initiateSslPayment(amount, user_email);
-    res.json({ url: paymentUrl });
-  } catch (error) {
-    res.status(500).json({ message: "Payment initiation failed", error });
-  }
-};
+  const {
+    amount,
+    currency,
+    tran_id,
+    success_url,
+    fail_url,
+    cancel_url,
+    ...customerInfo
+  } = req.body;
 
-export const paymentSuccessful = async (req: Request, res: Response) => {
-  try {
-    const { transactionId } = req.params;
-    const { userEmail, amount } = req.body;
+  const data = {
+    total_amount: amount,
+    currency: currency || "BDT",
+    tran_id: tran_id || Date.now().toString(),
+    success_url,
+    fail_url,
+    cancel_url,
+    ...customerInfo,
+    product_category: "Ecommerce",
+    emi_option: 0,
+  };
 
-    if (!transactionId || !userEmail || !amount) {
-      return res.status(400).json({ message: "Invalid payment data" });
-    }
-
-    // Prevent duplicate transactions
-    const existingPayment = await Payment.findOne({ transactionId });
-    if (existingPayment) {
-      return res.status(200).json({ message: "Payment already recorded" });
-    }
-
-    // Save payment to MongoDB
-    const payment = new Payment({
-      transactionId,
-      userEmail,
-      amount,
-      status: "Success",
+  const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
+  sslcz
+    .init(data)
+    .then((apiResponse: any) => {
+      console.log("SSLCOMMERZ API Response:", apiResponse);
+      let GatewayPageURL = apiResponse.GatewayPageURL;
+      res.json({ url: GatewayPageURL });
+    })
+    .catch((e: any) => {
+      res.status(500).json({ error: "Payment initiation failed", details: e });
     });
-
-    const result = await payment.save();
-
-    console.log("✅ Payment saved:", payment);
-    res.json({
-      success: true,
-      message: "Payment recorded successfully",
-      data: result,
-    });
-  } catch (error) {
-    console.error("❌ Error saving payment:", error);
-    res.status(500).json({ message: "Server error" });
-  }
 };

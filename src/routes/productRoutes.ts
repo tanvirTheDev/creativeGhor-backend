@@ -8,6 +8,7 @@ import {
   getProductBySlugHandler,
   getProductsByCategoryHandler,
   getProductsByCategorySlugHandler,
+  searchProductsByTitle,
   updateProductHandler,
 } from "../controllers/productController";
 import { authMiddleware } from "../middleware/auth";
@@ -26,5 +27,7 @@ router.delete("/delete-product/:_id", authMiddleware, deleteProductHandler);
 
 router.get("/product/:_id", getProductByIdHandler);
 router.get("/product/slug/:slug", getProductBySlugHandler);
+
+router.get("/products/search", searchProductsByTitle);
 
 export default router;

@@ -1,12 +1,8 @@
-import express, { RequestHandler } from "express";
-import {
-  initiatePayment,
-  paymentSuccessful,
-} from "../controllers/paymentController";
+import express from "express";
+import { initiatePayment } from "../controllers/paymentController";
 
 const router = express.Router();
 
-router.post("/initiate-payment", initiatePayment as RequestHandler);
-router.post("/success/:transactionId", paymentSuccessful as RequestHandler);
+router.post("/payment/initiate", initiatePayment);
 
 export default router;

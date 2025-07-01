@@ -16,7 +16,7 @@ router.use("/api/v1", categoryRoutes);
 router.use("/api/v1", productRoutes);
 
 // Use payment routes
-router.use("/api/v1/payment", paymentRoutes);
+router.use("/api/v1", paymentRoutes);
 
 router.use("/api/v1", sellerRoutes);
 
